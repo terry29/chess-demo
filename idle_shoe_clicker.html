@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle Shoe Clicker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            grid-column: 1 / -1;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .click-area {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .shoe-button {
+            font-size: 4em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .shoe-button:hover {
+            transform: scale(1.1);
+        }
+
+        .shoe-button:active {
+            transform: scale(0.95);
+        }
+
+        .upgrades h2, .automation h2 {
+            margin-bottom: 15px;
+            color: #ffd700;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 5px;
+        }
+
+        .upgrade, .auto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .upgrade-info, .auto-info {
+            flex: 1;
+        }
+
+        .upgrade-name, .auto-name {
+            font-weight: bold;
+            color: #87ceeb;
+        }
+
+        .upgrade-desc, .auto-desc {
+            font-size: 0.9em;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        .buy-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .buy-button:hover {
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .buy-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .click-effect {
+            position: absolute;
+            font-size: 1.5em;
+            font-weight: bold;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+
+        .prestige-section {
+            grid-column: 1 / -1;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            margin-top: 20px;
+        }
+
+        .prestige-button {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        .prestige-button:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👟 IDLE SHOE CLICKER 👟</h1>
+        
+        <div class="panel">
+            <div class="stats">
+                <div class="stat-line">
+                    <span>Shoes:</span>
+                    <span id="shoes">0</span>
+                </div>
+                <div class="stat-line">
+                    <span>Shoes per Click:</span>
+                    <span id="shoesPerClick">1</span>
+                </div>
+                <div class="stat-line">
+                    <span>Shoes per Second:</span>
+                    <span id="shoesPerSecond">0</span>
+                </div>
+                <div class="stat-line">
+                    <span>Total Shoes Made:</span>
+                    <span id="totalShoes">0</span>
+                </div>
+                <div class="stat-line">
+                    <span>Prestige Points:</span>
+                    <span id="prestigePoints">0</span>
+                </div>
+            </div>
+            
+            <div class="click-area">
+                <button class="shoe-button" id="shoeButton" onclick="clickShoe()">👟</button>
+                <p>Click the shoe to make shoes!</p>
+            </div>
+        </div>
+
+        <div class="panel upgrades">
+            <h2>Manual Upgrades</h2>
+            <div id="upgradesList"></div>
+        </div>
+
+        <div class="panel automation">
+            <h2>Automation</h2>
+            <div id="automationList"></div>
+        </div>
+
+        <div class="panel">
+            <h2>Advanced Upgrades</h2>
+            <div id="advancedUpgrades"></div>
+        </div>
+
+        <div class="panel prestige-section" id="prestigeSection" style="display: none;">
+            <h2>🌟 PRESTIGE 🌟</h2>
+            <p>Reset everything but gain <strong>permanent money bonuses</strong>!</p>
+            <p>You will gain <span id="prestigeGain">0</span> Prestige Points</p>
+            <p><strong>Prestige Benefits:</strong></p>
+            <p>• +10% production bonus per prestige point</p>
+            <p>• +5% income bonus per prestige point</p>
+            <p>• Bonuses stack multiplicatively!</p>
+            <button class="prestige-button" onclick="prestige()">PRESTIGE FOR MONEY BONUS</button>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            shoes: 0,
+            totalShoes: 0,
+            shoesPerClick: 1,
+            shoesPerSecond: 0,
+            prestigePoints: 0,
+            upgrades: {
+                betterLaces: 0,
+                reinforcedSoles: 0,
+                premiumLeather: 0,
+                factoryTool: 0,
+                shoeAI: 0
+            },
+            automation: {
+                apprentice: 0,
+                cobbler: 0,
+                factory: 0,
+                robot: 0,
+                aiSystem: 0
+            }
+        };
+
+        const upgradeData = {
+            betterLaces: {
+                name: "Better Laces",
+                desc: "Stronger laces = better shoes (+1 per click)",
+                baseCost: 10,
+                effect: 1
+            },
+            reinforcedSoles: {
+                name: "Reinforced Soles",
+                desc: "Double-strength soles (+2 per click)",
+                baseCost: 100,
+                effect: 2
+            },
+            premiumLeather: {
+                name: "Premium Leather",
+                desc: "Luxury materials (+5 per click)",
+                baseCost: 1000,
+                effect: 5
+            },
+            factoryTool: {
+                name: "Factory Tools",
+                desc: "Industrial equipment (+10 per click)",
+                baseCost: 10000,
+                effect: 10
+            },
+            shoeAI: {
+                name: "Shoe Design AI",
+                desc: "AI-optimized shoe design (+25 per click)",
+                baseCost: 100000,
+                effect: 25
+            }
+        };
+
+        const automationData = {
+            apprentice: {
+                name: "Apprentice Cobbler",
+                desc: "Makes 1 shoe per second",
+                baseCost: 50,
+                production: 1
+            },
+            cobbler: {
+                name: "Master Cobbler",
+                desc: "Makes 5 shoes per second",
+                baseCost: 500,
+                production: 5
+            },
+            factory: {
+                name: "Shoe Factory",
+                desc: "Makes 25 shoes per second",
+                baseCost: 5000,
+                production: 25
+            },
+            robot: {
+                name: "Robo-Cobbler",
+                desc: "Makes 100 shoes per second",
+                baseCost: 50000,
+                production: 100
+            },
+            aiSystem: {
+                name: "AI Shoe Matrix",
+                desc: "Makes 500 shoes per second",
+                baseCost: 500000,
+                production: 500
+            }
+        };
+
+        function updateDisplay() {
+            document.getElementById('shoes').textContent = Math.floor(gameState.shoes).toLocaleString();
+            document.getElementById('shoesPerClick').textContent = gameState.shoesPerClick.toLocaleString();
+            document.getElementById('shoesPerSecond').textContent = gameState.shoesPerSecond.toLocaleString();
+            document.getElementById('totalShoes').textContent = Math.floor(gameState.totalShoes).toLocaleString();
+            document.getElementById('prestigePoints').textContent = gameState.prestigePoints;
+
+            // Show prestige section when total shoes > 1M
+            if (gameState.totalShoes >= 1000000) {
+                document.getElementById('prestigeSection').style.display = 'block';
+                const prestigeGain = Math.floor(Math.sqrt(gameState.totalShoes / 1000000));
+                document.getElementById('prestigeGain').textContent = prestigeGain;
+            }
+        }
+
+        function calculateUpgradeCost(baseCost, owned) {
+            return Math.floor(baseCost * Math.pow(1.15, owned));
+        }
+
+        function calculateAutomationCost(baseCost, owned) {
+            return Math.floor(baseCost * Math.pow(1.2, owned));
+        }
+
+        function updateUpgrades() {
+            const upgradesList = document.getElementById('upgradesList');
+            upgradesList.innerHTML = '';
+
+            for (const [key, data] of Object.entries(upgradeData)) {
+                const cost = calculateUpgradeCost(data.baseCost, gameState.upgrades[key]);
+                const canAfford = gameState.shoes >= cost;
+
+                const upgradeDiv = document.createElement('div');
+                upgradeDiv.className = 'upgrade';
+                upgradeDiv.innerHTML = `
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">${data.name} (${gameState.upgrades[key]})</div>
+                        <div class="upgrade-desc">${data.desc}</div>
+                    </div>
+                    <button class="buy-button" ${!canAfford ? 'disabled' : ''} 
+                            onclick="buyUpgrade('${key}')">
+                        ${cost.toLocaleString()} shoes
+                    </button>
+                `;
+                upgradesList.appendChild(upgradeDiv);
+            }
+        }
+
+        function updateAutomation() {
+            const automationList = document.getElementById('automationList');
+            automationList.innerHTML = '';
+
+            gameState.shoesPerSecond = 0;
+            for (const [key, data] of Object.entries(automationData)) {
+                const cost = calculateAutomationCost(data.baseCost, gameState.automation[key]);
+                const canAfford = gameState.shoes >= cost;
+                gameState.shoesPerSecond += gameState.automation[key] * data.production;
+
+                const autoDiv = document.createElement('div');
+                autoDiv.className = 'auto-item';
+                autoDiv.innerHTML = `
+                    <div class="auto-info">
+                        <div class="auto-name">${data.name} (${gameState.automation[key]})</div>
+                        <div class="auto-desc">${data.desc}</div>
+                    </div>
+                    <button class="buy-button" ${!canAfford ? 'disabled' : ''} 
+                            onclick="buyAutomation('${key}')">
+                        ${cost.toLocaleString()} shoes
+                    </button>
+                `;
+                automationList.appendChild(autoDiv);
+            }
+        }
+
+        function updateAdvancedUpgrades() {
+            const advancedList = document.getElementById('advancedUpgrades');
+            
+            if (gameState.prestigePoints > 0) {
+                advancedList.innerHTML = `
+                    <div class="upgrade">
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">Prestige Production Bonus</div>
+                            <div class="upgrade-desc">+${gameState.prestigePoints * 10}% shoes per second and per click</div>
+                        </div>
+                    </div>
+                    <div class="upgrade">
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">Prestige Income Bonus</div>
+                            <div class="upgrade-desc">+${gameState.prestigePoints * 5}% more shoes from all sources</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                advancedList.innerHTML = '<p>Unlock prestige to see advanced upgrades!</p>';
+            }
+        }
+
+        function buyUpgrade(upgradeKey) {
+            const data = upgradeData[upgradeKey];
+            const cost = calculateUpgradeCost(data.baseCost, gameState.upgrades[upgradeKey]);
+            
+            if (gameState.shoes >= cost) {
+                gameState.shoes -= cost;
+                gameState.upgrades[upgradeKey]++;
+                gameState.shoesPerClick += data.effect;
+                updateDisplay();
+                updateUpgrades();
+            }
+        }
+
+        function buyAutomation(autoKey) {
+            const data = automationData[autoKey];
+            const cost = calculateAutomationCost(data.baseCost, gameState.automation[autoKey]);
+            
+            if (gameState.shoes >= cost) {
+                gameState.shoes -= cost;
+                gameState.automation[autoKey]++;
+                updateDisplay();
+                updateAutomation();
+            }
+        }
+
+        function clickShoe() {
+            // Prestige gives both production bonus AND income bonus
+            const prestigeProductionBonus = 1 + (gameState.prestigePoints * 0.1);
+            const prestigeIncomeBonus = 1 + (gameState.prestigePoints * 0.05);
+            const totalBonus = prestigeProductionBonus * prestigeIncomeBonus;
+            
+            const shoesGained = gameState.shoesPerClick * totalBonus;
+            
+            gameState.shoes += shoesGained;
+            gameState.totalShoes += shoesGained;
+            
+            // Visual effect
+            createClickEffect(shoesGained);
+            
+            updateDisplay();
+            updateUpgrades();
+            updateAutomation();
+        }
+
+        function createClickEffect(amount) {
+            const button = document.getElementById('shoeButton');
+            const rect = button.getBoundingClientRect();
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.textContent = `+${Math.floor(amount)}`;
+            effect.style.left = (rect.left + rect.width/2) + 'px';
+            effect.style.top = (rect.top + rect.height/2) + 'px';
+            effect.style.position = 'fixed';
+            document.body.appendChild(effect);
+            
+            setTimeout(() => effect.remove(), 1000);
+        }
+
+        function prestige() {
+            const prestigeGain = Math.floor(Math.sqrt(gameState.totalShoes / 1000000));
+            
+            if (prestigeGain > 0) {
+                gameState.prestigePoints += prestigeGain;
+                
+                // Reset everything except prestige points
+                gameState.shoes = 0;
+                gameState.totalShoes = 0;
+                gameState.shoesPerClick = 1;
+                gameState.shoesPerSecond = 0;
+                
+                for (let key in gameState.upgrades) {
+                    gameState.upgrades[key] = 0;
+                }
+                for (let key in gameState.automation) {
+                    gameState.automation[key] = 0;
+                }
+                
+                document.getElementById('prestigeSection').style.display = 'none';
+                updateDisplay();
+                updateUpgrades();
+                updateAutomation();
+                updateAdvancedUpgrades();
+            }
+        }
+
+        // Game loop
+        setInterval(() => {
+            if (gameState.shoesPerSecond > 0) {
+                // Prestige gives both production bonus AND income bonus
+                const prestigeProductionBonus = 1 + (gameState.prestigePoints * 0.1);
+                const prestigeIncomeBonus = 1 + (gameState.prestigePoints * 0.05);
+                const totalBonus = prestigeProductionBonus * prestigeIncomeBonus;
+                
+                const shoesGained = (gameState.shoesPerSecond / 10) * totalBonus;
+                gameState.shoes += shoesGained;
+                gameState.totalShoes += shoesGained;
+                updateDisplay();
+            }
+        }, 100);
+
+        // Initialize
+        updateDisplay();
+        updateUpgrades();
+        updateAutomation();
+        updateAdvancedUpgrades();
+    </script>
+</body>
+</html>

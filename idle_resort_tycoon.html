@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle Resort Tycoon</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .click-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .click-button {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            font-size: 1.2em;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .click-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+        }
+        
+        .click-button:active {
+            transform: scale(0.95);
+        }
+        
+        .upgrades {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .upgrade-section {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .upgrade-section h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .upgrade {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .upgrade-info {
+            flex: 1;
+        }
+        
+        .upgrade-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .upgrade-description {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        
+        .upgrade-owned {
+            font-size: 0.8em;
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        
+        .upgrade-button {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            min-width: 80px;
+        }
+        
+        .upgrade-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .upgrade-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .prestige-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .prestige-button {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin: 10px;
+        }
+        
+        .prestige-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .prestige-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .save-load {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .save-button, .load-button {
+            background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .save-button:hover, .load-button:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1 class="title">🏨 Idle Resort Tycoon</h1>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="money">$0</div>
+                <div class="stat-label">Total Money</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="income-per-second">$0/sec</div>
+                <div class="stat-label">Income Per Second</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="money-per-click">$1</div>
+                <div class="stat-label">Money Per Click</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="prestige-level">0</div>
+                <div class="stat-label">Prestige Level</div>
+            </div>
+        </div>
+        
+        <div class="click-area">
+            <button class="click-button" id="click-button">
+                🏖️<br>Click Resort!<br>Make Money!
+            </button>
+        </div>
+        
+        <div class="prestige-section">
+            <h3>🌟 Prestige System</h3>
+            <p>Prestige Level: <span id="prestige-display">0</span> (×<span id="prestige-multiplier">1.00</span> income multiplier)</p>
+            <p>Next prestige requires: $<span id="prestige-requirement">1000</span></p>
+            <button class="prestige-button" id="prestige-button" disabled>
+                Reset & Prestige (+50% permanent income bonus)
+            </button>
+        </div>
+        
+        <div class="upgrades">
+            <div class="upgrade-section">
+                <h3>🏨 Resort Buildings</h3>
+                <div id="building-upgrades"></div>
+            </div>
+            
+            <div class="upgrade-section">
+                <h3>⚡ Click Upgrades</h3>
+                <div id="click-upgrades"></div>
+            </div>
+            
+            <div class="upgrade-section">
+                <h3>🎯 Automation</h3>
+                <div id="automation-upgrades"></div>
+            </div>
+        </div>
+        
+        <div class="save-load">
+            <button class="save-button" id="save-button">💾 Save Game</button>
+            <button class="load-button" id="load-button">📁 Load Game</button>
+            <button class="save-button" id="export-button">📤 Export Save</button>
+            <button class="load-button" id="import-button">📥 Import Save</button>
+        </div>
+    </div>
+
+    <script>
+        class IdleResortTycoon {
+            constructor() {
+                this.gameState = {
+                    money: 0,
+                    totalEarned: 0,
+                    incomePerSecond: 0,
+                    moneyPerClick: 0.5,
+                    prestigeLevel: 0,
+                    upgrades: {
+                        buildings: {
+                            'beach-chair': { owned: 0, baseCost: 10, baseIncome: 0.5 },
+                            'snack-bar': { owned: 0, baseCost: 100, baseIncome: 2.5 },
+                            'pool': { owned: 0, baseCost: 500, baseIncome: 12.5 },
+                            'hotel-room': { owned: 0, baseCost: 2000, baseIncome: 62.5 },
+                            'spa': { owned: 0, baseCost: 10000, baseIncome: 312.5 },
+                            'casino': { owned: 0, baseCost: 50000, baseIncome: 1562.5 },
+                            'golf-course': { owned: 0, baseCost: 200000, baseIncome: 7812.5 },
+                            'water-park': { owned: 0, baseCost: 1000000, baseIncome: 39062.5 },
+                            'private-island': { owned: 0, baseCost: 5000000, baseIncome: 195312.5 },
+                            'space-resort': { owned: 0, baseCost: 25000000, baseIncome: 976562.5 }
+                        },
+                        clicks: {
+                            'better-service': { owned: 0, baseCost: 50, baseBonus: 0.5 },
+                            'luxury-amenities': { owned: 0, baseCost: 250, baseBonus: 2.5 },
+                            'vip-treatment': { owned: 0, baseCost: 1000, baseBonus: 12.5 },
+                            'celebrity-endorsement': { owned: 0, baseCost: 5000, baseBonus: 62.5 },
+                            'exclusive-memberships': { owned: 0, baseCost: 25000, baseBonus: 312.5 },
+                            'royal-treatment': { owned: 0, baseCost: 125000, baseBonus: 1562.5 },
+                            'billionaire-experience': { owned: 0, baseCost: 625000, baseBonus: 7812.5 }
+                        },
+                        automation: {
+                            'manager': { owned: 0, baseCost: 1000, description: '+5% income per second' },
+                            'marketing': { owned: 0, baseCost: 5000, description: '+10% all income' },
+                            'expansion': { owned: 0, baseCost: 25000, description: '+20% building efficiency' },
+                            'ai-optimization': { owned: 0, baseCost: 125000, description: '+25% all income' },
+                            'global-brand': { owned: 0, baseCost: 625000, description: '+30% click income' },
+                            'time-dilation': { owned: 0, baseCost: 3125000, description: '+50% income per second' },
+                            'quantum-hospitality': { owned: 0, baseCost: 15625000, description: '+100% all income' }
+                        }
+                    }
+                };
+                
+                this.upgradeDefinitions = {
+                    buildings: {
+                        'beach-chair': { name: 'Beach Chair', description: 'Basic seating for guests' },
+                        'snack-bar': { name: 'Snack Bar', description: 'Quick refreshments' },
+                        'pool': { name: 'Swimming Pool', description: 'Cool off in style' },
+                        'hotel-room': { name: 'Hotel Room', description: 'Overnight accommodations' },
+                        'spa': { name: 'Luxury Spa', description: 'Premium relaxation' },
+                        'casino': { name: 'Casino', description: 'High-roller entertainment' },
+                        'golf-course': { name: 'Golf Course', description: 'Championship golfing' },
+                        'water-park': { name: 'Water Park', description: 'Thrilling aquatic adventures' },
+                        'private-island': { name: 'Private Island', description: 'Exclusive island getaway' },
+                        'space-resort': { name: 'Space Resort', description: 'Zero-gravity luxury' }
+                    },
+                    clicks: {
+                        'better-service': { name: 'Better Service', description: 'Improve guest satisfaction' },
+                        'luxury-amenities': { name: 'Luxury Amenities', description: 'Premium guest experiences' },
+                        'vip-treatment': { name: 'VIP Treatment', description: 'Exclusive guest services' },
+                        'celebrity-endorsement': { name: 'Celebrity Endorsement', description: 'Famous guest appearances' },
+                        'exclusive-memberships': { name: 'Exclusive Memberships', description: 'Elite access programs' },
+                        'royal-treatment': { name: 'Royal Treatment', description: 'Fit for kings and queens' },
+                        'billionaire-experience': { name: 'Billionaire Experience', description: 'Ultimate luxury service' }
+                    },
+                    automation: {
+                        'manager': { name: 'Hire Manager', description: 'Automate operations' },
+                        'marketing': { name: 'Marketing Campaign', description: 'Attract more guests' },
+                        'expansion': { name: 'Resort Expansion', description: 'Bigger and better facilities' },
+                        'ai-optimization': { name: 'AI Optimization', description: 'Smart efficiency systems' },
+                        'global-brand': { name: 'Global Brand', description: 'Worldwide recognition' },
+                        'time-dilation': { name: 'Time Dilation Field', description: 'Bend time itself' },
+                        'quantum-hospitality': { name: 'Quantum Hospitality', description: 'Multidimensional service' }
+                    }
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.loadGame();
+                this.bindEvents();
+                this.createUpgradeElements();
+                this.updateDisplay();
+                this.startGameLoop();
+                
+                // Auto-save every 30 seconds
+                setInterval(() => this.saveGame(), 30000);
+            }
+            
+            bindEvents() {
+                document.getElementById('click-button').addEventListener('click', () => this.clickResort());
+                document.getElementById('prestige-button').addEventListener('click', () => this.prestige());
+                document.getElementById('save-button').addEventListener('click', () => this.saveGame());
+                document.getElementById('load-button').addEventListener('click', () => this.loadGame());
+                document.getElementById('export-button').addEventListener('click', () => this.exportSave());
+                document.getElementById('import-button').addEventListener('click', () => this.importSave());
+            }
+            
+            clickResort() {
+                const earned = this.getMoneyPerClick();
+                this.gameState.money += earned;
+                this.gameState.totalEarned += earned;
+                this.updateDisplay();
+                
+                // Visual feedback
+                const button = document.getElementById('click-button');
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 100);
+                
+                // Debug log to console
+                console.log(`Clicked! Earned: ${earned}, Total Money: ${this.gameState.money}`);
+            }
+            
+            getMoneyPerClick() {
+                let baseClick = this.gameState.moneyPerClick;
+                const clickUpgrades = this.gameState.upgrades.clicks;
+                let bonus = 0;
+                
+                Object.keys(clickUpgrades).forEach(key => {
+                    const upgrade = clickUpgrades[key];
+                    bonus += upgrade.owned * upgrade.baseBonus;
+                });
+                
+                const totalClick = baseClick + bonus;
+                return totalClick * this.getPrestigeMultiplier();
+            }
+            
+            getIncomePerSecond() {
+                let income = 0;
+                const buildings = this.gameState.upgrades.buildings;
+                
+                Object.keys(buildings).forEach(key => {
+                    const building = buildings[key];
+                    income += building.owned * building.baseIncome;
+                });
+                
+                // Apply multipliers
+                income *= this.getPrestigeMultiplier();
+                income *= this.getAutomationMultiplier();
+                
+                return Math.floor(income);
+            }
+            
+            getPrestigeMultiplier() {
+                return 1 + (this.gameState.prestigeLevel * 0.5);
+            }
+            
+            getAutomationMultiplier() {
+                let multiplier = 1;
+                const automation = this.gameState.upgrades.automation;
+                
+                multiplier += automation.manager.owned * 0.05;
+                multiplier += automation.marketing.owned * 0.1;
+                multiplier += automation.expansion.owned * 0.2;
+                multiplier += automation['ai-optimization'].owned * 0.25;
+                multiplier += automation['global-brand'].owned * 0.3;
+                multiplier += automation['time-dilation'].owned * 0.5;
+                multiplier += automation['quantum-hospitality'].owned * 1.0;
+                
+                return multiplier;
+            }
+            
+            canPrestige() {
+                return this.gameState.totalEarned >= this.getPrestigeRequirement();
+            }
+            
+            getPrestigeRequirement() {
+                return Math.floor(250 * Math.pow(2.5, this.gameState.prestigeLevel));
+            }
+            
+            prestige() {
+                if (!this.canPrestige()) return;
+                
+                if (confirm('Are you sure you want to prestige? This will reset your progress but give you a permanent 50% income bonus!')) {
+                    this.gameState.prestigeLevel++;
+                    this.gameState.money = 0;
+                    this.gameState.totalEarned = 0;
+                    this.gameState.moneyPerClick = 0.5;
+                    
+                    // Reset all upgrades
+                    Object.keys(this.gameState.upgrades).forEach(category => {
+                        Object.keys(this.gameState.upgrades[category]).forEach(key => {
+                            this.gameState.upgrades[category][key].owned = 0;
+                        });
+                    });
+                    
+                    this.updateDisplay();
+                    this.saveGame();
+                }
+            }
+            
+            buyUpgrade(category, key) {
+                const upgrade = this.gameState.upgrades[category][key];
+                const cost = this.getUpgradeCost(category, key);
+                
+                if (this.gameState.money >= cost) {
+                    this.gameState.money -= cost;
+                    upgrade.owned++;
+                    this.updateDisplay();
+                }
+            }
+            
+            getUpgradeCost(category, key) {
+                const upgrade = this.gameState.upgrades[category][key];
+                return Math.floor(upgrade.baseCost * Math.pow(1.15, upgrade.owned));
+            }
+            
+            createUpgradeElements() {
+                // Clear existing upgrades first
+                document.getElementById('building-upgrades').innerHTML = '';
+                document.getElementById('click-upgrades').innerHTML = '';
+                document.getElementById('automation-upgrades').innerHTML = '';
+                
+                this.createBuildingUpgrades();
+                this.createClickUpgrades();
+                this.createAutomationUpgrades();
+            }
+            
+            createBuildingUpgrades() {
+                const container = document.getElementById('building-upgrades');
+                Object.keys(this.gameState.upgrades.buildings).forEach(key => {
+                    const upgrade = this.gameState.upgrades.buildings[key];
+                    const definition = this.upgradeDefinitions.buildings[key];
+                    
+                    const div = document.createElement('div');
+                    div.className = 'upgrade';
+                    div.innerHTML = `
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">${definition.name}</div>
+                            <div class="upgrade-description">${definition.description} ($${upgrade.baseIncome}/sec each)</div>
+                            <div class="upgrade-owned">Owned: <span id="${key}-owned">0</span></div>
+                        </div>
+                        <button class="upgrade-button" id="${key}-button">
+                            $<span id="${key}-cost">0</span>
+                        </button>
+                    `;
+                    
+                    div.querySelector('button').addEventListener('click', () => this.buyUpgrade('buildings', key));
+                    container.appendChild(div);
+                });
+            }
+            
+            createClickUpgrades() {
+                const container = document.getElementById('click-upgrades');
+                Object.keys(this.gameState.upgrades.clicks).forEach(key => {
+                    const upgrade = this.gameState.upgrades.clicks[key];
+                    const definition = this.upgradeDefinitions.clicks[key];
+                    
+                    const div = document.createElement('div');
+                    div.className = 'upgrade';
+                    div.innerHTML = `
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">${definition.name}</div>
+                            <div class="upgrade-description">${definition.description} (+$${upgrade.baseBonus} per click)</div>
+                            <div class="upgrade-owned">Owned: <span id="${key}-owned">0</span></div>
+                        </div>
+                        <button class="upgrade-button" id="${key}-button">
+                            $<span id="${key}-cost">0</span>
+                        </button>
+                    `;
+                    
+                    div.querySelector('button').addEventListener('click', () => this.buyUpgrade('clicks', key));
+                    container.appendChild(div);
+                });
+            }
+            
+            createAutomationUpgrades() {
+                const container = document.getElementById('automation-upgrades');
+                Object.keys(this.gameState.upgrades.automation).forEach(key => {
+                    const upgrade = this.gameState.upgrades.automation[key];
+                    const definition = this.upgradeDefinitions.automation[key];
+                    
+                    const div = document.createElement('div');
+                    div.className = 'upgrade';
+                    div.innerHTML = `
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">${definition.name}</div>
+                            <div class="upgrade-description">${definition.description} (${upgrade.description})</div>
+                            <div class="upgrade-owned">Owned: <span id="${key}-owned">0</span></div>
+                        </div>
+                        <button class="upgrade-button" id="${key}-button">
+                            $<span id="${key}-cost">0</span>
+                        </button>
+                    `;
+                    
+                    div.querySelector('button').addEventListener('click', () => this.buyUpgrade('automation', key));
+                    container.appendChild(div);
+                });
+            }
+            
+            updateDisplay() {
+                // Update main stats
+                document.getElementById('money').textContent = '$' + this.formatNumber(this.gameState.money);
+                document.getElementById('income-per-second').textContent = '$' + this.formatNumber(this.getIncomePerSecond()) + '/sec';
+                document.getElementById('money-per-click').textContent = '$' + this.formatNumber(this.getMoneyPerClick());
+                document.getElementById('prestige-level').textContent = this.gameState.prestigeLevel;
+                
+                // Update prestige info
+                document.getElementById('prestige-display').textContent = this.gameState.prestigeLevel;
+                document.getElementById('prestige-multiplier').textContent = this.getPrestigeMultiplier().toFixed(2);
+                document.getElementById('prestige-requirement').textContent = this.formatNumber(this.getPrestigeRequirement());
+                
+                const prestigeButton = document.getElementById('prestige-button');
+                prestigeButton.disabled = !this.canPrestige();
+                
+                // Update upgrade displays
+                Object.keys(this.gameState.upgrades).forEach(category => {
+                    Object.keys(this.gameState.upgrades[category]).forEach(key => {
+                        const upgrade = this.gameState.upgrades[category][key];
+                        const cost = this.getUpgradeCost(category, key);
+                        
+                        const ownedElement = document.getElementById(key + '-owned');
+                        const costElement = document.getElementById(key + '-cost');
+                        const buttonElement = document.getElementById(key + '-button');
+                        
+                        if (ownedElement) ownedElement.textContent = upgrade.owned;
+                        if (costElement) costElement.textContent = this.formatNumber(cost);
+                        if (buttonElement) buttonElement.disabled = this.gameState.money < cost;
+                    });
+                });
+                
+                this.gameState.incomePerSecond = this.getIncomePerSecond();
+            }
+            
+            formatNumber(num) {
+                if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
+                if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+                if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+                if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+                if (num >= 1) return num.toFixed(1);
+                return num.toFixed(1);
+            }
+            
+            startGameLoop() {
+                setInterval(() => {
+                    if (this.gameState.incomePerSecond > 0) {
+                        const income = this.gameState.incomePerSecond / 10; // 10 updates per second
+                        this.gameState.money += income;
+                        this.gameState.totalEarned += income;
+                        this.updateDisplay();
+                    }
+                }, 100);
+            }
+            
+            saveGame() {
+                const saveData = JSON.stringify(this.gameState);
+                if (typeof(Storage) !== "undefined") {
+                    localStorage.setItem('idleResortTycoon', saveData);
+                    this.showMessage('Game saved!');
+                }
+            }
+            
+            loadGame() {
+                if (typeof(Storage) !== "undefined" && localStorage.getItem('idleResortTycoon')) {
+                    try {
+                        const savedData = JSON.parse(localStorage.getItem('idleResortTycoon'));
+                        this.gameState = { ...this.gameState, ...savedData };
+                        this.updateDisplay();
+                        this.showMessage('Game loaded!');
+                    } catch (e) {
+                        console.error('Failed to load save data');
+                    }
+                }
+            }
+            
+            exportSave() {
+                const saveData = JSON.stringify(this.gameState);
+                const blob = new Blob([saveData], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'idle-resort-tycoon-save.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+                this.showMessage('Save exported!');
+            }
+            
+            importSave() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.txt';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const saveData = JSON.parse(e.target.result);
+                                this.gameState = { ...this.gameState, ...saveData };
+                                this.updateDisplay();
+                                this.saveGame();
+                                this.showMessage('Save imported!');
+                            } catch (error) {
+                                alert('Invalid save file!');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+                input.click();
+            }
+            
+            showMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = message;
+                messageDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    animation: fadeInOut 3s ease-in-out;
+                `;
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fadeInOut {
+                        0%, 100% { opacity: 0; transform: translateX(100px); }
+                        10%, 90% { opacity: 1; transform: translateX(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                document.body.appendChild(messageDiv);
+                setTimeout(() => {
+                    document.body.removeChild(messageDiv);
+                    document.head.removeChild(style);
+                }, 3000);
+            }
+        }
+        
+        // Start the game when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new IdleResortTycoon();
+        });
+    </script>
+</body>
+</html>
